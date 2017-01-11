@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using CleanArchitecture.Core.Interfaces;
 using CleanArchitecture.Core.Entities;
 using CleanArchitecture.Core.SharedKernel;
@@ -103,6 +104,17 @@ namespace CleanArchitecture.Web
                 Description = "Test Description Two"
             });
             dbContext.SaveChanges();
+
+	        var guestbooks = dbContext.Guestbooks;
+	        foreach (var gb in guestbooks)
+		        dbContext.Remove(gb);
+
+	        var guestbook = new Guestbook {Name = "New Guestbook"};
+	        guestbook.Entries.Add(new GuestbookEntry {EmailAddress = "test@test.com", Message = "This is a message"});
+
+	        dbContext.Guestbooks.Add(guestbook);
+	        dbContext.SaveChanges();
+
         }
 
 
