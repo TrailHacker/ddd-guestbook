@@ -10,11 +10,20 @@ namespace CleanArchitecture.Web.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly IRepository<Guestbook> _guestbookRepository;
+	    private readonly IGuestbookService _guestbookService;
+	    private readonly IMessageSender _messageSender;
+	    private readonly IRepository<Guestbook> _guestbookRepository;
 
-        public HomeController(IRepository<Guestbook> guestbookRepository)
+        public HomeController(IGuestbookService guestbookService, IMessageSender messageSender, IRepository<Guestbook> guestbookRepository)
         {
-            _guestbookRepository = guestbookRepository;
+	        if (guestbookService == null)
+		        throw new ArgumentNullException(nameof(guestbookService));
+	        if (messageSender == null)
+		        throw new ArgumentNullException(nameof(messageSender));
+
+	        _guestbookService = guestbookService;
+	        _messageSender = messageSender;
+	        _guestbookRepository = guestbookRepository;
         }
 
         public IActionResult Index()
@@ -44,8 +53,7 @@ namespace CleanArchitecture.Web.Controllers
             if (ModelState.IsValid)
             {
                 var guestbook = _guestbookRepository.GetById(1);
-                guestbook.Entries.Add(model.NewEntry);
-                _guestbookRepository.Update(guestbook);
+				_guestbookService.RecordEntry(guestbook, model.NewEntry); 
 
                 model.PreviousEntries.Clear();
                 model.PreviousEntries.AddRange(guestbook.Entries);

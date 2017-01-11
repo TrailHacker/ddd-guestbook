@@ -58,6 +58,7 @@ namespace CleanArchitecture.Web
                 });
 
                 // TODO: Add Registry Classes
+	            config.For<IMessageSender>().Use<EmailMessageSenderService>();
 
                 // TODO: Move to Infrastucture Registry
                 config.For(typeof(IRepository<>)).Add(typeof(EfRepository<>));
